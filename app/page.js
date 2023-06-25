@@ -72,9 +72,46 @@ export default function Home() {
         </div>
       </div>
       <div className="col-span-7 grid grid-rows-6 gap-y-2">
-        <div className="bg-sky-300 shadow-md row-span-2 grid grid-cols-2">
-          <div>1</div>
-          <div>2</div>
+        <div className="bg-white p-2 rounded-md shadow-md gap-x-4 row-span-2 grid grid-cols-2">
+          <div>
+            <p className="mb-3">Budget</p>
+            {[1, 2, 2, 1, 1].map((item) => (
+              <div className="flex gap-x-2 mt-2">
+                <p className="text-sm">Food</p>
+                <div className="w-full bg-slate-300 rounded-full overflow-hidden relative">
+                  <div className="bg-blue-400 text-sm rounded-full h-full w-[40%]">
+                    {" "}
+                  </div>
+                  <p className="text-center text-sm absolute bottom-0 top-0 left-0 right-0 text-slate-800">
+                    36%
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <p className="mb-3">Savings</p>
+            {[1, 2, 2, 1, 1].map((item) => (
+              <div className="flex gap-x-2 mt-2">
+                <p className="text-sm">Food</p>
+                <div className="w-full bg-slate-300 rounded-full overflow-hidden relative group">
+                  <div className="bg-blue-400 text-sm rounded-full h-full w-[60%] group-hover:hidden">
+                    {" "}
+                  </div>
+                  <p className="text-center text-sm absolute bottom-0 top-0 left-0 right-0 text-slate-800 group-hover:hidden">
+                    60%
+                  </p>
+
+                  <div className="bg-purple-400 text-sm rounded-full h-full w-full group-hover:block">
+                    {" "}
+                  </div>
+                  <p className="text-center text-sm absolute bottom-0 top-0 left-0 right-0 text-slate-800 hidden group-hover:block">
+                    Rp250.000/Rp750.000
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="bg-sky-300 shadow-md row-span-4">card 1</div>
       </div>
