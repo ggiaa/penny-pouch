@@ -1,6 +1,6 @@
 "use client";
 import "./globals.css";
-import { Poppins } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import {
   AiOutlineHome,
   AiOutlineLineChart,
@@ -11,7 +11,7 @@ import {
 import { useSelectedLayoutSegments } from "next/navigation";
 import Link from "next/link";
 
-const poppins = Poppins({ weight: "500", subsets: ["latin"] });
+const poppins = Inter({ weight: "400", subsets: ["latin"] });
 
 export const metadata = {
   title: "Penny Pouch",

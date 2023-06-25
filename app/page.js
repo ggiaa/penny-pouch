@@ -1,5 +1,10 @@
 import Image from "next/image";
 import {
+  AiOutlineCrown,
+  AiOutlineFieldTime,
+  AiOutlineSafety,
+} from "react-icons/ai";
+import {
   IoIosArrowRoundDown,
   IoIosArrowRoundUp,
   IoIosArrowForward,
@@ -113,11 +118,35 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <div className="bg-sky-300 shadow-md row-span-4">card 1</div>
+        <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
+          Chart
+        </div>
       </div>
       <div className="col-span-2 grid grid-rows-6 gap-y-2">
-        <div className="bg-sky-300 shadow-md row-span-3">card 1</div>
-        <div className="bg-sky-300 shadow-md row-span-3">card 1</div>
+        <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
+          <p className="mb-4">Accounts</p>
+          {[1, 2, 3, 1, 1].map((item) => (
+            <div className="text-sm bg-sky-300 rounded-md p-2 mb-2">
+              <p>Cash</p>
+              <p className="text-right">Rp310.000</p>
+            </div>
+          ))}
+        </div>
+        <div className="bg-white shadow-md row-span-2 p-2 rounded-md">
+          <p className="mb-4">2023 Progress</p>
+          <div className="text-sm flex items-center gap-x-2 mb-2">
+            <AiOutlineCrown className="text-lg" />
+            <p>7 goals achieved</p>
+          </div>
+          <div className="text-sm flex items-center gap-x-2 mb-2">
+            <AiOutlineFieldTime className="text-lg" />
+            <p>3 goals in progress</p>
+          </div>
+          <div className="text-sm flex items-center gap-x-2 mb-2">
+            <AiOutlineSafety className="text-lg" />
+            <p>Rp10.000.000 saved</p>
+          </div>
+        </div>
       </div>
     </div>
   );
