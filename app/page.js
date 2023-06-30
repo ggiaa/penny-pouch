@@ -12,7 +12,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="h-full p-2 grid grid-cols-12 gap-x-2">
+    <div className="h-full grid grid-cols-12 gap-x-2">
       <div className="col-span-3 grid grid-rows-6 gap-y-2">
         <div className="bg-white rounded-md p-2 shadow-md text-center flex justify-center flex-col gap-y-1 w-full h-full">
           <p className="text-sm">My Balance</p>
@@ -35,24 +35,24 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
-          <p>Recent Transactions</p>
+          <p className="">Recent Transactions</p>
           <div className="divide-y">
-            {[1, 1, 1, 1, 1, 1, 1].map((item) => (
-              <div className="grid grid-cols-12 text-xs py-2">
-                <div className="bg-red-600 rounded-full w-8 aspect-square flex items-center justify-center">
+            {[1, 1, 1, 1, 1, 1].map((item) => (
+              <div className="grid grid-cols-12 text-sm py-2">
+                <div className="bg-red-600 rounded-full w-8 aspect-square my-auto flex items-center justify-center">
                   <IoIosArrowRoundDown className="text-2xl text-white" />
                 </div>
                 <div className="col-span-7 ml-3">
                   <div className="items-center flex gap-x-1">
-                    <p className="font-semibold">Food</p>
+                    <p className="">Food</p>
                     <IoIosArrowForward />
-                    <p className="font-semibold">Lunch</p>
+                    <p className="">Lunch</p>
                   </div>
-                  <p>Nasi Goreng</p>
+                  <p className="text-xs mt-1">Nasi Goreng</p>
                 </div>
                 <div className="col-span-4 text-right">
-                  <p className="text-red-500 font-semibold">Rp.15.000</p>
-                  <p className="font-thin">16 Jun(Fri)</p>
+                  <p className="text-red-500">Rp.15.000</p>
+                  <p className="text-xs mt-1">16 Jun(Fri)</p>
                 </div>
               </div>
             ))}

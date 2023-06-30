@@ -11,7 +11,7 @@ import {
 import { useSelectedLayoutSegments } from "next/navigation";
 import Link from "next/link";
 
-const poppins = Inter({ weight: "400", subsets: ["latin"] });
+const poppins = Inter({ weight: "500", subsets: ["latin"] });
 
 export const metadata = {
   title: "Penny Pouch",
@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <div className="h-[90vh]">{children}</div>
+        <div className="h-[90vh] p-2">{children}</div>
         <div className="h-[10vh] flex justify-center items-center pb-2">
           <div className="bg-white grid grid-cols-5 items-center text-center gap-4 w-2/5 rounded-full py-1 shadow-lg border border-slate-300">
             <div>
