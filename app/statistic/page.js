@@ -29,7 +29,7 @@ function statistic() {
         </div>
         <div className="mt-2 flex justify-center gap-x-4">
           <div className="flex gap-x-1">
-            <input type="radio" name="statistic" value="calendar" />
+            <input type="radio" name="statistic" value="calendar" checked />
             <label>Calendar</label>
           </div>
           <div className="flex gap-x-1">
@@ -38,7 +38,20 @@ function statistic() {
           </div>
         </div>
       </div>
-      <div className="flex-grow bg-white"></div>
+      <div className="flex-grow">
+        <div className="text-sm bg-white p-2 rounded">
+          <p className="mb-1 font-semibold">Today (19 Jan)</p>
+          {[1, 1, 1, 1].map((e) => (
+            <div className="justify-between flex font-light pl-4 mb-1">
+              <div>
+                <p>food {">"} lunch</p>
+                <p className="text-xs">Cococrunch</p>
+              </div>
+              <p>Rp25.000</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
