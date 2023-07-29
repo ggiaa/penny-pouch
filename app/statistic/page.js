@@ -40,7 +40,7 @@ function statistic() {
       </div>
       <div className="flex-grow">
         <div className="text-sm bg-white p-2 rounded">
-          <p className="mb-1 font-semibold">Today (19 Jan)</p>
+          <p className="mb-1 font-semibold ">Today (19 Jan)</p>
           {[1, 1, 1, 1].map((e) => (
             <div className="justify-between flex font-light pl-4 mb-1">
               <div>
