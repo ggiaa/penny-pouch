@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import {
   AiOutlineCrown,
@@ -9,8 +11,33 @@ import {
   IoIosArrowRoundUp,
   IoIosArrowForward,
 } from "react-icons/io";
+import RecentTransaction from "./components/Home/RecentTransaction";
+import { useEffect, useState } from "react";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { db } from "./config/firebase";
 
 export default function Home() {
+  const [recentTransactions, setRecentTransactions] = useState([]);
+
+  console.log(recentTransactions);
+  useEffect(() => {
+    const getRecentTransaction = async () => {
+      const q = query(
+        collection(db, "transactions"),
+        orderBy("date"),
+        limit(6)
+      );
+      const querySnapshot = await getDocs(q);
+      const filteredData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setRecentTransactions(filteredData);
+    };
+
+    getRecentTransaction();
+  }, []);
+
   return (
     <div className="h-full grid grid-cols-12 gap-x-2">
       <div className="col-span-2 grid grid-rows-6 gap-y-2">
@@ -78,8 +105,8 @@ export default function Home() {
         <div className="grid grid-cols-3 row-span-2 gap-x-2">
           <div className="bg-white p-2 rounded-md shadow-md col-span-2">
             <p>Today Budget Expense</p>
-            {[1, 1, 1, 1, 1].map((item) => (
-              <div className="grid grid-cols-12 mt-2">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <div className="grid grid-cols-12 mt-2" key={item}>
                 <p className="text-sm col-span-3">Food</p>
                 <div className="w-full bg-slate-300 col-span-9 rounded-full overflow-hidden relative group">
                   <div className="bg-blue-400 text-sm rounded-full h-full w-[40%] group-hover:hidden">
@@ -155,45 +182,7 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
-          <p className="">Recent Transactions</p>
-          <div className="divide-y">
-            {[1, 1, 1, 1, 1, 1].map((item) => (
-              <div className="grid grid-cols-12 text-sm py-2">
-                <div className="bg-red-600 rounded-full w-8 aspect-square my-auto flex items-center justify-center">
-                  <IoIosArrowRoundDown className="text-2xl text-white" />
-                </div>
-                <div className="col-span-7 ml-3">
-                  <div className="items-center flex gap-x-1">
-                    <p className="">Food</p>
-                    <IoIosArrowForward />
-                    <p className="">Lunch</p>
-                  </div>
-                  <p className="text-xs mt-1">Nasi Goreng</p>
-                </div>
-                <div className="col-span-4 text-right">
-                  <p className="text-red-500">Rp.15.000</p>
-                  <p className="text-xs mt-1">16 Jun(Fri)</p>
-                </div>
-              </div>
-            ))}
-            {/* <div className="grid grid-cols-12 items-center text-xs">
-              <div className="bg-red-600 col-span-1 rounded-full aspect-square flex items-center justify-center">
-                <IoIosArrowRoundDown className="text-2xl text-white" />
-              </div>
-              <div className="col-span-7 ml-2">
-                <div className="items-center flex gap-x-1">
-                  <p>Food</p>
-                  <IoIosArrowForward />
-                  <p>Lunch</p>
-                </div>
-                <p>Nasi Goreng</p>
-              </div>
-              <div className="col-span-4 text-right">
-                <p>Rp.15.000</p>
-                <p>16 Jun(Fri)</p>
-              </div>
-            </div> */}
-          </div>
+          <RecentTransaction recentTransactions={recentTransactions} />
         </div>
       </div>
     </div>

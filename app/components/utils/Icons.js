@@ -9,7 +9,7 @@ import {
   BiDollarCircle,
 } from "react-icons/bi";
 import { LuCitrus } from "react-icons/lu";
-import { AiOutlineDollar } from "react-icons/ai";
+import { AiOutlineDollar, AiOutlineQuestion } from "react-icons/ai";
 
 export {
   LuCitrus,
@@ -22,4 +22,5 @@ export {
   BiCustomize,
   BiDollarCircle,
   AiOutlineDollar,
+  AiOutlineQuestion,
 };

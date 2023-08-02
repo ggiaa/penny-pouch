@@ -16,6 +16,7 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
   const [categoryText2, setcategoryText2] = useState("Uncategorized");
   const [amount, setamount] = useState("");
   const [note, setnote] = useState("");
+  // const [iconName, setIconName] = useState("");
   const [date, setDate] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -77,6 +78,7 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
       sub_category: categoryText2,
       is_expense: category.is_expense,
       is_income: category.is_income,
+      icon: category.icon,
     });
 
     setModalOpen(false);
@@ -208,7 +210,10 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
                         onClick={() => handleCategoryClick(category)}
                       >
                         <div className="w-10 h-10 rounded-full bg-slate-200 border-slate-300 border mx-auto flex justify-center items-center">
-                          <DinamicIcon iconName={category.icon} />
+                          <DinamicIcon
+                            size="text-2xl"
+                            iconName={category.icon}
+                          />
                         </div>
                         <h1 className="text-sm">{category.name}</h1>
                       </div>

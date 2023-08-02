@@ -1,8 +1,8 @@
 import * as Icons from "./Icons";
 
-function DinamicIcon({ iconName = "BiCustomize" }) {
+function DinamicIcon({ iconName, size }) {
   const Icon = Icons[iconName];
-  return <Icon className="text-2xl font-extralight" />;
+  return <Icon className={`${size} font-extralight`} />;
 }
 
 export default DinamicIcon;
