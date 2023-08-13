@@ -15,27 +15,14 @@ import RecentTransaction from "./components/Home/RecentTransaction";
 import { useEffect, useState } from "react";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { db } from "./config/firebase";
+import useStore from "./store/store";
 
 export default function Home() {
-  const [recentTransactions, setRecentTransactions] = useState([]);
+  const modeStore = useStore();
+  const storeData = useStore((state) => state);
 
-  console.log(recentTransactions);
   useEffect(() => {
-    const getRecentTransaction = async () => {
-      const q = query(
-        collection(db, "transactions"),
-        orderBy("date"),
-        limit(6)
-      );
-      const querySnapshot = await getDocs(q);
-      const filteredData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setRecentTransactions(filteredData);
-    };
-
-    getRecentTransaction();
+    modeStore.fetchRecentTransactions();
   }, []);
 
   return (
@@ -182,7 +169,9 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
-          <RecentTransaction recentTransactions={recentTransactions} />
+          <RecentTransaction
+            recentTransactions={storeData.recentTransactions}
+          />
         </div>
       </div>
     </div>
