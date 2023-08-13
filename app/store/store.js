@@ -5,6 +5,7 @@ import {
   limit,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { immer } from "zustand/middleware/immer";
@@ -14,7 +15,7 @@ const { create } = require("zustand");
 const useStore = create((set, get) => ({
   balance: 0,
   recentTransactions: [],
-  addIncome: () => set((state) => ({ balance: state.balance + 1 })),
+  currentMonthBalance: { income: 0, expense: 0 },
   fetchRecentTransactions: async () => {
     const q = query(
       collection(db, "transactions"),
@@ -28,6 +29,42 @@ const useStore = create((set, get) => ({
       date: doc.data().date.toDate(),
     }));
     set({ recentTransactions: filteredData });
+  },
+  fetchCurrentMonthBalance: async () => {
+    var date = new Date();
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    const q = query(
+      collection(db, "transactions"),
+      where("date", ">=", firstDay),
+      where("date", "<=", lastDay)
+    );
+    const querySnapshot = await getDocs(q);
+    const filteredData = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+      date: doc.data().date.toDate(),
+    }));
+
+    var income = 0;
+    var expense = 0;
+
+    filteredData.forEach((element) => {
+      if (element.is_income) {
+        income += parseInt(element.amount);
+      } else if (element.is_expense) {
+        expense += parseInt(element.amount);
+      }
+    });
+
+    set((state) => ({
+      currentMonthBalance: {
+        ...state.currentMonthBalance,
+        income: income,
+        expense: expense,
+      },
+    }));
   },
   addTransaction: async (params) => {
     var newTransaction = {

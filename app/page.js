@@ -19,14 +19,13 @@ import useStore from "./store/store";
 
 export default function Home() {
   const modeStore = useStore();
-  const storeData = useStore((state) => state);
 
   const recentTransactions = useStore((state) => state.recentTransactions);
-
-  console.log(storeData);
+  const currentMonthBalance = useStore((state) => state.currentMonthBalance);
 
   useEffect(() => {
     modeStore.fetchRecentTransactions();
+    modeStore.fetchCurrentMonthBalance();
   }, []);
 
   return (
@@ -161,14 +160,14 @@ export default function Home() {
             <IoIosArrowRoundDown className="text-3xl text-green-600" />
             <div>
               <p className="text-sm">Income</p>
-              <p className="text-green-600">Rp1.200.000</p>
+              <p className="text-green-600">Rp{currentMonthBalance.income}</p>
             </div>
           </div>
           <div className="flex items-center gap-x-1">
             <IoIosArrowRoundUp className="text-3xl text-red-600" />
             <div>
-              <p className="text-sm">Income</p>
-              <p className="text-red-600">Rp1.200.000</p>
+              <p className="text-sm">Expense</p>
+              <p className="text-red-600">Rp{currentMonthBalance.expense}</p>
             </div>
           </div>
         </div>
