@@ -41,7 +41,7 @@ function RecentTransaction({ recentTransactions }) {
                   />
                 </p>
                 <p className="text-xs mt-1">
-                  {moment(item.date.toDate()).calendar(null, {
+                  {moment(item.date).calendar(null, {
                     sameDay: "[Today]",
                     nextDay: "[Tomorrow]",
                     nextWeek: "dddd",

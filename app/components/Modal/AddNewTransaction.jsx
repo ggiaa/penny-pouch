@@ -5,8 +5,11 @@ import { AiOutlineClose } from "react-icons/ai";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/app/config/firebase";
 import * as firebase from "firebase/firestore";
+import useStore from "@/app/store/store";
 
 function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
+  const store = useStore();
+
   const [category, setCategory] = useState();
   const [categoryModal, setCategoryModal] = useState(false);
   const [activeCategoryTab, setActiveCategoryTab] = useState(1);
@@ -69,10 +72,10 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
   };
 
   const handleSave = async () => {
-    await addDoc(collection(db, "transactions"), {
+    await store.addTransaction({
       account: "",
       amount: amount,
-      date: date.startDate,
+      date: new Date(date.startDate),
       note: note,
       category: categoryText1,
       sub_category: categoryText2,

@@ -21,6 +21,10 @@ export default function Home() {
   const modeStore = useStore();
   const storeData = useStore((state) => state);
 
+  const recentTransactions = useStore((state) => state.recentTransactions);
+
+  console.log(storeData);
+
   useEffect(() => {
     modeStore.fetchRecentTransactions();
   }, []);
@@ -169,9 +173,7 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
-          <RecentTransaction
-            recentTransactions={storeData.recentTransactions}
-          />
+          <RecentTransaction recentTransactions={recentTransactions} />
         </div>
       </div>
     </div>
