@@ -95,6 +95,23 @@ const useStore = create((set, get) => ({
     set({
       recentTransactions: currentRecentTrans,
     });
+
+    var income = get().currentMonthBalance.income;
+    var expense = get().currentMonthBalance.expense;
+
+    if (newTransaction.is_income) {
+      income += parseInt(newTransaction.amount);
+    } else if (newTransaction.is_expense) {
+      expense += parseInt(newTransaction.amount);
+    }
+
+    set((state) => ({
+      currentMonthBalance: {
+        ...state.currentMonthBalance,
+        income: income,
+        expense: expense,
+      },
+    }));
   },
 }));
 

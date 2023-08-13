@@ -16,7 +16,11 @@ function RecentTransaction({ recentTransactions }) {
         {recentTransactions &&
           recentTransactions.map((item, index) => (
             <div className="grid grid-cols-12 text-sm py-2" key={index}>
-              <div className="bg-red-600 rounded-full w-8 aspect-square my-auto flex items-center justify-center">
+              <div
+                className={`${
+                  item.is_income ? "bg-green-600" : "bg-red-600"
+                } rounded-full w-8 aspect-square my-auto flex items-center justify-center text-white`}
+              >
                 <DinamicIcon
                   size="text-xl"
                   iconName={item.icon ?? "AiOutlineQuestion"}

@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { db } from "./config/firebase";
 import useStore from "./store/store";
+import { NumericFormat } from "react-number-format";
 
 export default function Home() {
   const modeStore = useStore();
@@ -160,14 +161,30 @@ export default function Home() {
             <IoIosArrowRoundDown className="text-3xl text-green-600" />
             <div>
               <p className="text-sm">Income</p>
-              <p className="text-green-600">Rp{currentMonthBalance.income}</p>
+              <p className="text-green-600">
+                <NumericFormat
+                  value={currentMonthBalance.income}
+                  displayType={"text"}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix={"Rp"}
+                />
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-x-1">
             <IoIosArrowRoundUp className="text-3xl text-red-600" />
             <div>
               <p className="text-sm">Expense</p>
-              <p className="text-red-600">Rp{currentMonthBalance.expense}</p>
+              <p className="text-red-600">
+                <NumericFormat
+                  value={currentMonthBalance.expense}
+                  displayType={"text"}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix={"Rp"}
+                />
+              </p>
             </div>
           </div>
         </div>

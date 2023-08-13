@@ -6,6 +6,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/app/config/firebase";
 import * as firebase from "firebase/firestore";
 import useStore from "@/app/store/store";
+import { NumericFormat } from "react-number-format";
 
 function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
   const store = useStore();
@@ -120,12 +121,15 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
             }`}
             onClick={() => setCategoryModal(true)}
           />
-          <input
-            type="text"
+          <NumericFormat
             placeholder="Amount"
             className="input-style"
             value={amount}
-            onChange={(e) => setamount(e.target.value)}
+            onValueChange={(values) => setamount(values.value)}
+            displayType={"input"}
+            thousandSeparator="."
+            decimalSeparator=","
+            prefix={"Rp"}
           />
           <input
             type="text"
