@@ -16,6 +16,7 @@ const useStore = create((set, get) => ({
   balance: 0,
   recentTransactions: [],
   currentMonthBalance: { income: 0, expense: 0 },
+  monthlyTransactions: [],
   fetchRecentTransactions: async () => {
     const q = query(
       collection(db, "transactions"),
@@ -31,9 +32,9 @@ const useStore = create((set, get) => ({
     set({ recentTransactions: filteredData });
   },
   fetchCurrentMonthBalance: async () => {
-    var date = new Date();
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
     const q = query(
       collection(db, "transactions"),
@@ -47,8 +48,8 @@ const useStore = create((set, get) => ({
       date: doc.data().date.toDate(),
     }));
 
-    var income = 0;
-    var expense = 0;
+    let income = 0;
+    let expense = 0;
 
     filteredData.forEach((element) => {
       if (element.is_income) {
@@ -66,8 +67,23 @@ const useStore = create((set, get) => ({
       },
     }));
   },
+  fetchMonthlyTransactions: async ({ startDate, endDate }) => {
+    const q = query(
+      collection(db, "transactions"),
+      where("date", ">=", startDate)
+      // where("date", "<=", endDate)
+    );
+    const querySnapshot = await getDocs(q);
+    const filteredData = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+      date: doc.data().date.toDate(),
+    }));
+    console.log(filteredData);
+    // set({ monthlyTransactions: filteredData });
+  },
   addTransaction: async (params) => {
-    var newTransaction = {
+    const newTransaction = {
       account: params.account,
       amount: params.amount,
       date: params.date,
@@ -81,7 +97,7 @@ const useStore = create((set, get) => ({
 
     await addDoc(collection(db, "transactions"), newTransaction);
 
-    var currentRecentTrans = get().recentTransactions;
+    const currentRecentTrans = get().recentTransactions;
     currentRecentTrans.push(newTransaction);
 
     currentRecentTrans.sort((a, b) => {
@@ -89,15 +105,15 @@ const useStore = create((set, get) => ({
     });
 
     if (currentRecentTrans.length > 6) {
-      var currentRecentTrans = currentRecentTrans.slice(0, 6);
+      const currentRecentTrans = currentRecentTrans.slice(0, 6);
     }
 
     set({
       recentTransactions: currentRecentTrans,
     });
 
-    var income = get().currentMonthBalance.income;
-    var expense = get().currentMonthBalance.expense;
+    let income = get().currentMonthBalance.income;
+    let expense = get().currentMonthBalance.expense;
 
     if (newTransaction.is_income) {
       income += parseInt(newTransaction.amount);

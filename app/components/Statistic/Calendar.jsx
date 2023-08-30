@@ -1,150 +1,155 @@
 "use client";
-
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 
 function Calendar() {
-  const [currentDate, setCurrentDate] = useState();
-  const [months, setmonths] = useState([
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ]);
-  const [month, setMonth] = useState();
-  const [year, setYear] = useState();
-  const [date, setDate] = useState();
+  const date = new Date();
 
-  let date1 = new Date();
-  const getCalendar = () => {
-    let PreviousMonth = month - 1;
-    let NextMonth = month + 1;
+  const [dates, setDates] = useState([]);
+  const [actualMonth, setActualMonth] = useState();
+  const [actualYear, setActualYear] = useState();
+  const [selectedDate, setSelectedDate] = useState();
 
-    let firstDateOfMonth = new Date(year, month, 1).getDay();
-    let lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-    let lastDayOfMonth = new Date(year, month, lastDateOfMonth).getDay();
+  const getDate = () => {
+    setDates([]);
+    const arr = [];
+    const prevYear = actualMonth == 0 ? actualYear - 1 : actualYear;
+    const nextYear = actualMonth == 11 ? actualYear + 1 : actualYear;
+    const previousMonth = actualMonth - 1;
+    const nextMonth = actualMonth + 1;
 
-    let lastDateOfPreviousMonth = new Date(year, month, 0).getDate();
+    let firstDateOfMonth = new Date(actualYear, actualMonth, 0).getDay();
 
-    let allDate = [];
+    let lastDateOfMonth = new Date(actualYear, nextMonth, 0).getDate();
+    let lastDayOfMonth = new Date(
+      actualYear,
+      actualMonth,
+      lastDateOfMonth
+    ).getDay();
+    let lastDateOfPreviousMonth = new Date(
+      actualYear,
+      actualMonth,
+      0
+    ).getDate();
 
-    // Date before current month
-    for (let i = firstDateOfMonth; i > 0; i--) {
-      allDate.push(
-        <div
-          key={year + "-" + PreviousMonth + "-" + i}
-          className="border-r-[1px] border-b-[1px] border w-[calc(99%/7)] h-14"
-        >
-          <p>{lastDateOfPreviousMonth - i + 1}</p>
-        </div>
-      );
+    if (firstDateOfMonth < 6) {
+      for (
+        let i = lastDateOfPreviousMonth - firstDateOfMonth;
+        i <= lastDateOfPreviousMonth;
+        i++
+      ) {
+        arr.push(
+          moment().set({ Year: prevYear, month: previousMonth, date: i })
+        );
+      }
     }
 
-    // Current month
     for (let i = 1; i <= lastDateOfMonth; i++) {
-      allDate.push(
-        <div
-          key={year + "-" + month + "-" + i}
-          className={`border-r-[1px] border-b-[1px] border w-[calc(99%/7)] h-14 ${
-            currentDate == year + "-" + month + "-" + i
-              ? "bg-slate-200"
-              : "bg-white"
-          }`}
-        >
-          <p className="bg-red-300">{i}</p>
-        </div>
-      );
+      arr.push(moment().set({ Year: actualYear, month: actualMonth, date: i }));
     }
 
-    // Date after current month
-    for (let i = lastDayOfMonth; i < 6; i++) {
-      allDate.push(
-        <div
-          key={year + "-" + NextMonth + "-" + i}
-          className="border-r-[1px] border-b-[1px] border w-[calc(99%/7)] h-14"
-        >
-          <p>{i - lastDayOfMonth + 1}</p>
-        </div>
-      );
+    for (let i = 1; i < 7 - lastDayOfMonth; i++) {
+      arr.push(moment().set({ Year: nextYear, month: nextMonth, date: i }));
     }
 
-    return allDate;
+    setDates(arr);
+
+    console.log(actualYear);
+    console.log(actualMonth);
   };
 
   const changeToPreviousMonth = () => {
-    if (month - 1 < 0) {
-      setMonth(11);
-      setYear(year - 1);
+    if (actualMonth - 1 < 0) {
+      setActualMonth(11);
+      setActualYear(actualYear - 1);
     } else {
-      setMonth(month - 1);
+      setActualMonth(actualMonth - 1);
     }
+    // getDate();
   };
 
   const changeToNextMonth = () => {
-    if (month + 1 > 11) {
-      setMonth(0);
-      setYear(year + 1);
+    if (actualMonth + 1 > 11) {
+      setActualMonth(0);
+      setActualYear(actualYear + 1);
     } else {
-      setMonth(month + 1);
+      setActualMonth(actualMonth + 1);
     }
   };
 
   useEffect(() => {
-    const date = new Date();
-    setCurrentDate(
-      date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate()
-    );
-    setMonth(date.getMonth());
-    setYear(date.getFullYear());
-    setDate(date.getDate());
+    getDate();
+  }, [actualMonth, actualYear]);
+
+  useEffect(() => {
+    setActualMonth(date.getMonth());
+    setActualYear(date.getFullYear());
+    setSelectedDate(moment(date).format("YYYY-MM-DD"));
+    setDates([]);
+    getDate();
   }, []);
 
   return (
     <div>
       <div>
-        <div className="flex justify-between">
-          <p className="text-left font-semibold mb-1">
-            {months[month]} {year}
-          </p>
-          <div className="flex gap-x-4 cursor-pointer">
-            <div onClick={changeToPreviousMonth}>Previous</div>
-            <div onClick={changeToNextMonth}>Next</div>
+        <div>
+          <div className="flex justify-between">
+            <p className="text-left font-semibold mb-2 text-lg">
+              {moment()
+                .set({ Year: actualYear, month: actualMonth, date: 1 })
+                .format("MMMM YYYY")}
+            </p>
+            <div className="flex gap-x-4 cursor-pointer">
+              <div onClick={changeToPreviousMonth}>Previous</div>
+              <div onClick={changeToNextMonth}>Next</div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex">
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>SUN</p>
+          <div className="flex">
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>SUN</p>
+            </div>
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>MON</p>
+            </div>
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>TUE</p>
+            </div>
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>WED</p>
+            </div>
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>THU</p>
+            </div>
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>FRI</p>
+            </div>
+            <div className="w-[calc(100%/7)] text-center">
+              <p fontSize={14}>SAT</p>
+            </div>
           </div>
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>MON</p>
-          </div>
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>TUE</p>
-          </div>
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>WED</p>
-          </div>
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>THU</p>
-          </div>
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>FRI</p>
-          </div>
-          <div className="w-[calc(100%/7)] text-center">
-            <p fontSize={14}>SAT</p>
-          </div>
-        </div>
 
-        <div className="border border-t-[1px] border-l-[1px] flex flex-wrap">
-          {getCalendar()}
+          <div className="border border-t-[1px] border-l-[1px] flex flex-wrap">
+            {dates.map((date) => (
+              <div
+                key={date}
+                className={`${
+                  moment(date).format("YYYY-MM-DD") == selectedDate
+                    ? "bg-blue-200"
+                    : ""
+                } ${
+                  moment(date).get("month") == actualMonth
+                    ? "text-black"
+                    : "text-slate-400 bg-slate-50"
+                }border-r-[1px] border-b-[1px] border w-[calc(100%/7)] h-20 cursor-pointer`}
+                onClick={() =>
+                  setSelectedDate(moment(date).format("YYYY-MM-DD"))
+                }
+              >
+                <p>{moment(date).format("DD")}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
