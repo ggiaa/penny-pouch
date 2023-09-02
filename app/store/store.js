@@ -70,8 +70,8 @@ const useStore = create((set, get) => ({
   fetchMonthlyTransactions: async ({ startDate, endDate }) => {
     const q = query(
       collection(db, "transactions"),
-      where("date", ">=", startDate)
-      // where("date", "<=", endDate)
+      where("date", ">=", startDate),
+      where("date", "<=", endDate)
     );
     const querySnapshot = await getDocs(q);
     const filteredData = querySnapshot.docs.map((doc) => ({
@@ -79,8 +79,7 @@ const useStore = create((set, get) => ({
       id: doc.id,
       date: doc.data().date.toDate(),
     }));
-    console.log(filteredData);
-    // set({ monthlyTransactions: filteredData });
+    set({ monthlyTransactions: filteredData });
   },
   addTransaction: async (params) => {
     const newTransaction = {
@@ -97,19 +96,21 @@ const useStore = create((set, get) => ({
 
     await addDoc(collection(db, "transactions"), newTransaction);
 
-    const currentRecentTrans = get().recentTransactions;
+    const currentRecentTrans = await get().recentTransactions;
     currentRecentTrans.push(newTransaction);
 
     currentRecentTrans.sort((a, b) => {
       return new Date(b.date) - new Date(a.date);
     });
 
+    // console.log(currentRecentTrans);
+    let currRecentTrans = [];
     if (currentRecentTrans.length > 6) {
-      const currentRecentTrans = currentRecentTrans.slice(0, 6);
+      currRecentTrans = currentRecentTrans.slice(0, 6);
     }
 
     set({
-      recentTransactions: currentRecentTrans,
+      recentTransactions: currRecentTrans,
     });
 
     let income = get().currentMonthBalance.income;
