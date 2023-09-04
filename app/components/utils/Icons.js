@@ -7,9 +7,18 @@ import {
   BiGlassesAlt,
   BiCustomize,
   BiDollarCircle,
+  BiMoney,
 } from "react-icons/bi";
 import { LuCitrus } from "react-icons/lu";
-import { AiOutlineDollar, AiOutlineQuestion } from "react-icons/ai";
+import {
+  AiOutlineDollar,
+  AiOutlineQuestion,
+  AiFillSetting,
+  AiTwotonePushpin,
+  AiOutlinePushpin,
+  AiOutlineEdit,
+  AiOutlineDelete,
+} from "react-icons/ai";
 
 export {
   LuCitrus,
@@ -23,4 +32,10 @@ export {
   BiDollarCircle,
   AiOutlineDollar,
   AiOutlineQuestion,
+  BiMoney,
+  AiFillSetting,
+  AiTwotonePushpin,
+  AiOutlinePushpin,
+  AiOutlineEdit,
+  AiOutlineDelete,
 };

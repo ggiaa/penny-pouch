@@ -16,6 +16,28 @@
   }
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(125 211 252);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(2 132 199);
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   /* background: linear-gradient(
@@ -42,4 +64,8 @@ body {
 
 .input-style {
   @apply border border-slate-400 rounded p-2 focus:outline-none focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-blue-500;
+}
+
+.setting-selected-option {
+  @apply bg-sky-300;
 }
