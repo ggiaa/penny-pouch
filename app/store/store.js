@@ -1,6 +1,8 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   limit,
   orderBy,
@@ -17,6 +19,22 @@ const useStore = create((set, get) => ({
   recentTransactions: [],
   currentMonthBalance: { income: 0, expense: 0 },
   monthlyTransactions: [],
+  accounts: [],
+
+  fetchAccounts: async () => {
+    const q = query(
+      collection(db, "accounts")
+      // orderBy("date", "desc"),
+      // limit(6)
+    );
+    const querySnapshot = await getDocs(q);
+    const filteredData = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+      // date: doc.data().date.toDate(),
+    }));
+    set({ accounts: filteredData });
+  },
   fetchRecentTransactions: async () => {
     const q = query(
       collection(db, "transactions"),
@@ -129,6 +147,11 @@ const useStore = create((set, get) => ({
         expense: expense,
       },
     }));
+  },
+  deleteAccounts: async (id) => {
+    await deleteDoc(doc(db, "accounts", id));
+    const acc = get().accounts.filter((account) => account.id !== id);
+    set({ accounts: acc });
   },
 }));
 
