@@ -7,6 +7,7 @@ import { NumericFormat } from "react-number-format";
 function Accounts() {
   const [accountName, setAccountName] = useState("");
   const [accountBalance, setAccountBalance] = useState();
+  const [accountId, setAccountId] = useState(null);
 
   const modeStore = useStore();
 
@@ -16,7 +17,23 @@ function Accounts() {
     await modeStore.deleteAccounts(id);
   };
 
-  console.log(accounts);
+  const handleSave = async () => {
+    await modeStore.saveAccount(
+      { accountName, accountBalance, accountId },
+      accountId ? "edit" : "add"
+    );
+    setAccountName("");
+    setAccountBalance("");
+    setAccountId(null);
+  };
+
+  const editAccount = async (item) => {
+    setAccountName(item.account_name);
+    setAccountBalance(item.amount);
+    setAccountId(item.id);
+  };
+
+  // console.log(accounts);
   useEffect(() => {
     modeStore.fetchAccounts();
   }, []);
@@ -59,11 +76,13 @@ function Accounts() {
                         // iconName={item.icon ?? "AiOutlineQuestion"}
                         iconName="AiTwotonePushpin"
                       />
-                      <DinamicIcon
-                        size="text-xl"
-                        // iconName={item.icon ?? "AiOutlineQuestion"}
-                        iconName="AiOutlineEdit"
-                      />
+                      <div onClick={() => editAccount(item)}>
+                        <DinamicIcon
+                          size="text-xl"
+                          // iconName={item.icon ?? "AiOutlineQuestion"}
+                          iconName="AiOutlineEdit"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -104,11 +123,13 @@ function Accounts() {
                       // iconName={item.icon ?? "AiOutlineQuestion"}
                       iconName="AiOutlinePushpin"
                     />
-                    <DinamicIcon
-                      size="text-xl"
-                      // iconName={item.icon ?? "AiOutlineQuestion"}
-                      iconName="AiOutlineEdit"
-                    />
+                    <div onClick={() => editAccount(item)}>
+                      <DinamicIcon
+                        size="text-xl"
+                        // iconName={item.icon ?? "AiOutlineQuestion"}
+                        iconName="AiOutlineEdit"
+                      />
+                    </div>
                     <div onClick={() => handleDelete(item.id)}>
                       <DinamicIcon
                         size="text-xl"
@@ -151,7 +172,7 @@ function Accounts() {
             </button>
             <button
               className="bg-blue-600 rounded py-2 text-slate-50 font-medium w-24"
-              // onClick={handleSave}
+              onClick={handleSave}
             >
               Save
             </button>

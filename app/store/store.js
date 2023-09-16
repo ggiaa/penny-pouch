@@ -7,6 +7,7 @@ import {
   limit,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
@@ -152,6 +153,36 @@ const useStore = create((set, get) => ({
     await deleteDoc(doc(db, "accounts", id));
     const acc = get().accounts.filter((account) => account.id !== id);
     set({ accounts: acc });
+  },
+  saveAccount: async (params, mode) => {
+    if (mode == "add") {
+      const newAccount = {
+        account_name: params.accountName,
+        amount: params.accountBalance,
+        pinned: false,
+        pinned_order: 99,
+      };
+
+      const docRef = await addDoc(collection(db, "accounts"), newAccount);
+      set((state) => ({
+        accounts: [...state.accounts, { ...newAccount, id: docRef.id }],
+      }));
+    } else if (mode == "edit") {
+      await updateDoc(doc(db, "accounts", params.accountId), {
+        account_name: params.accountName,
+        amount: params.accountBalance,
+      });
+
+      const acc = get().accounts.map((account) => {
+        if (account.id == params.accountId) {
+          account["account_name"] = params.accountName;
+          account["amount"] = params.accountBalance;
+        }
+
+        return account;
+      });
+      set({ accounts: acc });
+    }
   },
 }));
 
