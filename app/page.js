@@ -17,6 +17,7 @@ import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { db } from "./config/firebase";
 import useStore from "./store/store";
 import { NumericFormat } from "react-number-format";
+import CurrentWeekStatistic from "./components/Home/CurrentWeekStatistic";
 
 export default function Home() {
   const modeStore = useStore();
@@ -148,7 +149,7 @@ export default function Home() {
           </div> */}
         </div>
         <div className="bg-white shadow-md row-span-4 p-2 rounded-md">
-          Chart
+          <CurrentWeekStatistic />
         </div>
       </div>
       <div className="col-span-3 grid grid-rows-6 gap-y-2">
