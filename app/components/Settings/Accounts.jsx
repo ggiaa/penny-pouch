@@ -8,11 +8,17 @@ function Accounts() {
   const [accountName, setAccountName] = useState("");
   const [accountBalance, setAccountBalance] = useState();
   const [accountId, setAccountId] = useState(null);
+  const [pinnedEditMode, setpinnedEditMode] = useState(false);
+  const [pinnedAcc, setPinnedAcc] = useState();
+  const [unpinnedAcc, setUnpinnedAcc] = useState();
 
   const modeStore = useStore();
 
   const accounts = useStore((state) => state.accounts);
+  const pinnedAccounts = accounts.filter((item) => item.pinned);
+  const unpinnedAccounts = accounts.filter((item) => !item.pinned);
 
+  // console.log(pinnedAcc);
   const handleDelete = async (id) => {
     await modeStore.deleteAccounts(id);
   };
@@ -33,6 +39,33 @@ function Accounts() {
     setAccountId(item.id);
   };
 
+  const handlePinnedEditMode = () => {
+    setpinnedEditMode(!pinnedEditMode);
+  };
+
+  const handleUnpin = (item) => {
+    setPinnedAcc(pinnedAcc.filter((acc) => acc.id != item.id));
+    setUnpinnedAcc([...unpinnedAcc, item]);
+  };
+  const handlePin = (item) => {
+    setUnpinnedAcc(unpinnedAcc.filter((acc) => acc.id != item.id));
+    setPinnedAcc([...pinnedAcc, item]);
+  };
+
+  const handleSavePinned = async () => {
+    setpinnedEditMode(!pinnedEditMode);
+    await modeStore.savePinnedAccounts(pinnedAcc, unpinnedAcc);
+  };
+
+  useEffect(() => {
+    setPinnedAcc(
+      accounts
+        .filter((item) => item.pinned)
+        .sort((a, b) => a.pinned_order - b.pinned_order)
+    );
+    setUnpinnedAcc(accounts.filter((item) => !item.pinned));
+  }, [accounts]);
+
   // console.log(accounts);
   useEffect(() => {
     modeStore.fetchAccounts();
@@ -42,58 +75,26 @@ function Accounts() {
     <div className="grid grid-cols-3 divide-x h-full w-full p-4">
       <div className="col-span-2 h-full pr-2 overflow-auto">
         <div className="mb-2">
-          <p className="font-medium text-lg mb-2">pinned account</p>
-          <div className="grid grid-cols-3 gap-2">
-            {accounts
-              .filter((item) => item.pinned)
-              .map((item, i) => (
-                <div className="bg-sky-200 p-2 rounded-md" key={i}>
-                  <div className="flex">
-                    <div
-                      className={`bg-green-600 rounded-full w-10 aspect-square my-auto flex items-center justify-center text-white`}
-                    >
-                      <DinamicIcon
-                        size="text-2xl"
-                        // iconName={item.icon ?? "AiOutlineQuestion"}
-                        iconName="BiMoney"
-                      />
-                    </div>
-                    <div className="ml-4 flex-1 text-sm">
-                      <p>{item.account_name}</p>
-                      <p>
-                        <NumericFormat
-                          value={item.amount}
-                          displayType={"text"}
-                          thousandSeparator="."
-                          decimalSeparator=","
-                          prefix={"Rp"}
-                        />
-                      </p>
-                    </div>
-                    <div className="h-full cursor-pointer flex">
-                      <DinamicIcon
-                        size="text-xl"
-                        // iconName={item.icon ?? "AiOutlineQuestion"}
-                        iconName="AiTwotonePushpin"
-                      />
-                      <div onClick={() => editAccount(item)}>
-                        <DinamicIcon
-                          size="text-xl"
-                          // iconName={item.icon ?? "AiOutlineQuestion"}
-                          iconName="AiOutlineEdit"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          <div className="flex justify-between">
+            <p className="font-medium text-lg mb-2">pinned account</p>
+            {!pinnedEditMode ? (
+              <button
+                className="bg-blue-600 rounded py-2 text-slate-50 font-medium px-2"
+                onClick={handlePinnedEditMode}
+              >
+                Set Pinned Accounts
+              </button>
+            ) : (
+              <button
+                className="bg-red-600 rounded py-2 text-slate-50 font-medium px-4"
+                onClick={handleSavePinned}
+              >
+                Save
+              </button>
+            )}
           </div>
-        </div>
-        <hr className="my-2" />
-        <div className="grid grid-cols-3 gap-2">
-          {accounts
-            .filter((item) => !item.pinned)
-            .map((item, i) => (
+          <div className="grid grid-cols-3 gap-2">
+            {pinnedAcc?.map((item, i) => (
               <div className="bg-sky-200 p-2 rounded-md" key={i}>
                 <div className="flex">
                   <div
@@ -118,29 +119,79 @@ function Accounts() {
                     </p>
                   </div>
                   <div className="h-full cursor-pointer flex">
-                    <DinamicIcon
-                      size="text-xl"
-                      // iconName={item.icon ?? "AiOutlineQuestion"}
-                      iconName="AiOutlinePushpin"
-                    />
-                    <div onClick={() => editAccount(item)}>
-                      <DinamicIcon
-                        size="text-xl"
-                        // iconName={item.icon ?? "AiOutlineQuestion"}
-                        iconName="AiOutlineEdit"
-                      />
-                    </div>
-                    <div onClick={() => handleDelete(item.id)}>
-                      <DinamicIcon
-                        size="text-xl"
-                        // iconName={item.icon ?? "AiOutlineQuestion"}
-                        iconName="AiOutlineDelete"
-                      />
-                    </div>
+                    {pinnedEditMode ? (
+                      <div onClick={() => handleUnpin(item)}>
+                        <DinamicIcon
+                          size="text-xl"
+                          iconName="AiTwotonePushpin"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <div onClick={() => editAccount(item)}>
+                          <DinamicIcon
+                            size="text-xl"
+                            iconName="AiOutlineEdit"
+                          />
+                        </div>
+                        <div onClick={() => handleDelete(item.id)}>
+                          <DinamicIcon
+                            size="text-xl"
+                            iconName="AiOutlineDelete"
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+        <hr className="my-2" />
+        <div className="grid grid-cols-3 gap-2">
+          {unpinnedAcc?.map((item, i) => (
+            <div className="bg-sky-200 p-2 rounded-md" key={i}>
+              <div className="flex">
+                <div
+                  className={`bg-green-600 rounded-full w-10 aspect-square my-auto flex items-center justify-center text-white`}
+                >
+                  <DinamicIcon size="text-2xl" iconName="BiMoney" />
+                </div>
+                <div className="ml-4 flex-1 text-sm">
+                  <p>{item.account_name}</p>
+                  <p>
+                    <NumericFormat
+                      value={item.amount}
+                      displayType={"text"}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      prefix={"Rp"}
+                    />
+                  </p>
+                </div>
+                <div className="h-full cursor-pointer flex">
+                  {pinnedEditMode ? (
+                    <div onClick={() => handlePin(item)}>
+                      <DinamicIcon size="text-xl" iconName="AiOutlinePushpin" />
+                    </div>
+                  ) : (
+                    <>
+                      <div onClick={() => editAccount(item)}>
+                        <DinamicIcon size="text-xl" iconName="AiOutlineEdit" />
+                      </div>
+                      <div onClick={() => handleDelete(item.id)}>
+                        <DinamicIcon
+                          size="text-xl"
+                          iconName="AiOutlineDelete"
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
       <div className="p-4">

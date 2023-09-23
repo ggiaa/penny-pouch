@@ -9,6 +9,7 @@ import {
   query,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { immer } from "zustand/middleware/immer";
@@ -25,11 +26,7 @@ const useStore = create((set, get) => ({
   currentWeekTransactions: [],
 
   fetchAccounts: async () => {
-    const q = query(
-      collection(db, "accounts")
-      // orderBy("date", "desc"),
-      // limit(6)
-    );
+    const q = query(collection(db, "accounts"));
     const querySnapshot = await getDocs(q);
     const filteredData = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
@@ -200,6 +197,75 @@ const useStore = create((set, get) => ({
       });
       set({ accounts: acc });
     }
+  },
+  savePinnedAccounts: async (newPinned, newUnpinned) => {
+    // console.log(newPinned);
+    // console.log(newUnpinned);
+    const accounts = get().accounts;
+    // const currentPinnedAccounts = accounts
+    //   .filter((account) => account.pinned)
+    //   .map((account) => account.id);
+    const newPinnedAccounts = newPinned.map((acc) => acc.id);
+    const newUnpinnedAccounts = newUnpinned.map((acc) => acc.id);
+
+    const batch = writeBatch(db);
+    // currentPinnedAccounts.map((acc) => {
+    //   const ref = doc(db, "accounts", acc);
+    //   batch.update(ref, { pinned: false });
+
+    //   // update item untuk dimasukkan ke state
+    //   accounts.map((item) => {
+    //     // console.log(item.id);
+    //     const record = item;
+    //     if (item.id == acc) {
+    //       record.pinned = false;
+    //     }
+    //   });
+    // });
+
+    newPinnedAccounts.map((acc, i) => {
+      const ref = doc(db, "accounts", acc);
+      batch.update(ref, { pinned: true, pinned_order: i + 1 });
+
+      // update item untuk dimasukkan ke state
+      accounts.map((item, i) => {
+        if (acc == item.id) {
+          item["pinned"] = true;
+          item["pinned_order"] = i + 1;
+        }
+        return item;
+      });
+    });
+
+    // console.log(newUnpinnedAccounts);
+    newUnpinnedAccounts.map((acc, i) => {
+      const ref = doc(db, "accounts", acc);
+      batch.update(ref, {
+        pinned: false,
+        pinned_order: newPinnedAccounts.length + i + 1,
+      });
+
+      // update item untuk dimasukkan ke state
+      accounts.map((item, i) => {
+        if (acc == item.id) {
+          item["pinned"] = false;
+          item["pinned_order"] = newPinnedAccounts.length + i + 1;
+        }
+        return item;
+      });
+    });
+
+    console.log(accounts);
+
+    const newAccounts = [...newPinned, ...newUnpinned];
+    const updatedNewAccounts = newAccounts.map((acc, i) => {
+      acc["pinned_order"] = i + 1;
+      return acc;
+    });
+
+    // console.log(updatedNewAccounts);
+    await batch.commit();
+    set({ accounts: updatedNewAccounts });
   },
   fetchCurrentWeekTransactions: async () => {
     const income = [0, 0, 0, 0, 0, 0, 0];
