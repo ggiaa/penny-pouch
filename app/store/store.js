@@ -163,6 +163,76 @@ const useStore = create((set, get) => ({
 
     set({ currentWeekTransactions: tempCurrentWeekTransactions });
   },
+  editTransaction: async (params) => {
+    const transactionId = params.id;
+    const updatedTransactionData = {
+      account: params.account,
+      amount: params.amount,
+      date: params.date,
+      note: params.note,
+      category: params.category,
+      sub_category: params.sub_category,
+      is_expense: params.is_expense,
+      is_income: params.is_income,
+      icon: params.icon,
+      id: transactionId,
+    };
+
+    // Update di firebase
+    const transactionRef = doc(db, "transactions", transactionId);
+    await updateDoc(transactionRef, updatedTransactionData);
+
+    // Update recent transaction
+    const q = query(
+      collection(db, "transactions"),
+      orderBy("date", "desc"),
+      limit(6)
+    );
+    const querySnapshot = await getDocs(q);
+    const filteredData = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+      date: doc.data().date.toDate(),
+    }));
+    set({ recentTransactions: filteredData });
+
+    // update currentWeekTransaction
+    const income = [0, 0, 0, 0, 0, 0, 0];
+    const expense = [0, 0, 0, 0, 0, 0, 0];
+    const allThisWeekDate = [];
+
+    const startWeek = new Date(moment().startOf("week"));
+    const endWeek = new Date(moment().endOf("week"));
+
+    for (var i = 0; i <= 6; i++) {
+      allThisWeekDate.push(
+        moment(startWeek).add(i, "days").format("YYYY-MM-DD")
+      );
+    }
+
+    const q2 = query(
+      collection(db, "transactions"),
+      where("date", ">=", new Date(moment().startOf("week"))),
+      where("date", "<=", new Date(moment().endOf("week"))),
+      orderBy("date")
+    );
+
+    const querySnapshot2 = await getDocs(q2);
+    const filteredData2 = querySnapshot2.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+
+    filteredData2.map((transaction) => {
+      const date = moment(transaction.date.toDate()).format("YYYY-MM-DD");
+      const index = allThisWeekDate.indexOf(date);
+
+      transaction.is_income
+        ? (income[index] += parseInt(transaction.amount))
+        : (expense[index] += parseInt(transaction.amount));
+    });
+    set({ currentWeekTransactions: { allThisWeekDate, income, expense } });
+  },
   deleteAccounts: async (id) => {
     await deleteDoc(doc(db, "accounts", id));
     const acc = get().accounts.filter((account) => account.id !== id);

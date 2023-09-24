@@ -3,8 +3,6 @@ import "./globals.css";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { useSelectedLayoutSegments } from "next/navigation";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "./config/firebase";
 import BottomNavbar from "./components/Navbar/BottomNavbar";
 import AddNewTransaction from "./components/Modal/AddNewTransaction";
 
@@ -21,23 +19,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
   const segments = useSelectedLayoutSegments();
   const [modalOpen, setModalOpen] = useState(false);
-  const [categories, setCategories] = useState();
-
-  useEffect(() => {
-    const getCategories = async () => {
-      const q = query(collection(db, "categories"));
-      const querySnapshot = await getDocs(q);
-
-      const filteredData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-
-      setCategories(filteredData);
-    };
-
-    getCategories();
-  }, []);
 
   return (
     <html lang="en">
@@ -50,11 +31,7 @@ export default function RootLayout({ children }) {
         </div>
 
         {/* MODAL */}
-        <AddNewTransaction
-          modalOpen={modalOpen}
-          categories={categories}
-          setModalOpen={setModalOpen}
-        />
+        <AddNewTransaction modalOpen={modalOpen} setModalOpen={setModalOpen} />
       </body>
     </html>
   );

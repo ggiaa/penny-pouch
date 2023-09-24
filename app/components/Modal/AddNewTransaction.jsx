@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import DinamicIcon from "../../components/utils/DinamicIcon";
 import { AiOutlineClose } from "react-icons/ai";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query } from "firebase/firestore";
 import { db } from "@/app/config/firebase";
 import * as firebase from "firebase/firestore";
 import useStore from "@/app/store/store";
 import { NumericFormat } from "react-number-format";
+import moment from "moment";
 
-function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
+function AddNewTransaction({
+  modalOpen,
+  setModalOpen,
+  transactionData = null,
+}) {
   const store = useStore();
+
+  const [categories, setCategories] = useState();
 
   const [category, setCategory] = useState();
   const [categoryModal, setCategoryModal] = useState(false);
@@ -26,6 +33,7 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
     endDate: new Date(),
   });
 
+  console.log(date);
   const handleDateChange = (newValue) => {
     console.log("newValue:", newValue);
     setDate(newValue);
@@ -73,17 +81,32 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
   };
 
   const handleSave = async () => {
-    await store.addTransaction({
-      account: "",
-      amount: amount,
-      date: new Date(date.startDate),
-      note: note,
-      category: categoryText1,
-      sub_category: categoryText2,
-      is_expense: category.is_expense,
-      is_income: category.is_income,
-      icon: category.icon,
-    });
+    if (transactionData) {
+      await store.editTransaction({
+        account: "",
+        amount: amount,
+        date: date?.startDate ? new Date(date.startDate) : transactionData.date,
+        icon: transactionData.icon,
+        is_expense: category?.is_expense ?? transactionData.is_expense,
+        is_income: category?.is_income ?? transactionData.is_income,
+        category: categoryText1,
+        sub_category: categoryText2,
+        note: note,
+        id: transactionData.id,
+      });
+    } else {
+      await store.addTransaction({
+        account: "",
+        amount: amount,
+        date: new Date(date.startDate),
+        note: note,
+        category: categoryText1,
+        sub_category: categoryText2,
+        is_expense: category.is_expense,
+        is_income: category.is_income,
+        icon: category.icon,
+      });
+    }
 
     setModalOpen(false);
     resetForm();
@@ -98,6 +121,38 @@ function AddNewTransaction({ modalOpen, categories, setModalOpen }) {
     setCategory();
     setActiveCategoryTab(1);
   };
+
+  useEffect(() => {
+    if (transactionData) {
+      setamount(transactionData.amount);
+      setDate({
+        startDate: moment(transactionData.date).format("YYYY-MM-DD"),
+        endDate: moment(transactionData.date).format("YYYY-MM-DD"),
+      });
+      setnote(transactionData.note);
+      transactionData.category && setcategoryText1(transactionData.category);
+      transactionData.sub_category &&
+        setcategoryText2(transactionData.sub_category);
+
+      console.log(transactionData);
+    }
+  }, [modalOpen]);
+
+  useEffect(() => {
+    const getCategories = async () => {
+      const q = query(collection(db, "categories"));
+      const querySnapshot = await getDocs(q);
+
+      const filteredData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+
+      setCategories(filteredData);
+    };
+
+    getCategories();
+  }, []);
 
   return (
     <div
