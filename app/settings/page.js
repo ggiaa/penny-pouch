@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Accounts from "../components/Settings/Accounts";
+import CategoriesSetting from "../components/Settings/CategoriesSetting";
 
 function settings() {
   const [selectedOption, setSelectedOption] = useState(0);
@@ -29,6 +30,7 @@ function settings() {
       <div className="flex-1 flex">
         <div className="h-full w-full">
           {options[selectedOption] == "Accounts" && <Accounts />}
+          {options[selectedOption] == "Categories" && <CategoriesSetting />}
         </div>
         {/* <div className="w-1/2 overflow-auto"></div>
         <div>3</div> */}

@@ -1,5 +1,6 @@
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -24,6 +25,7 @@ const useStore = create((set, get) => ({
   monthlyTransactions: [],
   accounts: [],
   currentWeekTransactions: [],
+  categories: [],
 
   fetchAccounts: async () => {
     const q = query(collection(db, "accounts"));
@@ -373,6 +375,68 @@ const useStore = create((set, get) => ({
         : (expense[index] += parseInt(transaction.amount));
     });
     set({ currentWeekTransactions: { allThisWeekDate, income, expense } });
+  },
+  fetchCategories: async () => {
+    const q = query(collection(db, "categories"), orderBy("name"));
+    const querySnapshot = await getDocs(q);
+    const filteredData = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+      // date: doc.data().date.toDate(),
+    }));
+    set({ categories: filteredData });
+  },
+  saveSubCategory: async (category, sub_category, newSubCategory) => {
+    const categoryref = doc(db, "categories", category);
+    let categories = get().categories;
+
+    if (!newSubCategory) {
+      await updateDoc(categoryref, {
+        sub_category: sub_category,
+      });
+
+      const updatedCategory = categories.map((cat) => {
+        if (cat.id == category) {
+          cat.sub_category = sub_category;
+        }
+
+        return cat;
+      });
+      set({ categories: updatedCategory });
+    } else {
+      await updateDoc(categoryref, {
+        sub_category: arrayUnion(newSubCategory),
+      });
+
+      const updatedCategory = categories.map((cat) => {
+        if (cat.id == category) {
+          cat.sub_category.push(newSubCategory);
+        }
+
+        return cat;
+      });
+
+      set({ categories: updatedCategory });
+    }
+  },
+  deleteCategory: async (category, index) => {
+    let categories = get().categories;
+    const subcategory = category.sub_category.filter((sub, i) => i !== index);
+
+    const categoryref = doc(db, "categories", category.id);
+    await updateDoc(categoryref, {
+      sub_category: subcategory,
+    });
+
+    const updatedCategory = categories.map((cat) => {
+      if (cat.id == category.id) {
+        cat.sub_category = subcategory;
+      }
+
+      return cat;
+    });
+
+    set({ categories: updatedCategory });
   },
 }));
 

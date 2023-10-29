@@ -33,7 +33,7 @@ function AddNewTransaction({
     endDate: new Date(),
   });
 
-  console.log(date);
+  // console.log(date);
   const handleDateChange = (newValue) => {
     console.log("newValue:", newValue);
     setDate(newValue);
